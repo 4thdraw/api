@@ -21,6 +21,22 @@ function App() {
     }
 
   }
+  const apidelet = async (pk) => { // 글삭제 pk가 반드시 필요 -> 매개인자
+    
+    let { data: items, error } = await supabase
+    .from('navidb').delete().eq('wr_id',pk);
+
+    console.log(items, Array.isArray(items))
+
+    if (error) {
+      console.error('Error deleting data:', error);
+      return;  // 오류가 발생하면 함수 종료
+    }
+    
+    apilistview(); // 삭제이후 갱신된 데이터 다시 가져오기
+  
+
+  }
 
   // 비동기 삭제함수 -> pk알려주기
 
@@ -48,7 +64,7 @@ function App() {
                   <li key={v.wr_id} >
                     <p onClick={()=>{ 
                       setView(v.gnblink); pageSet('view');  }}>{ v.gnbnm }</p>
-                    <button>수정</button><button>삭제</button>
+                    <button>수정</button><button onClick={()=>{ apidelet(v.wr_id); }}>삭제</button>
                   </li>
                  )
               })
@@ -63,7 +79,10 @@ function App() {
               <h1>글보기(pk반드시 존재)</h1>
               <div>
                 { gnbview }
-              </div>    
+              </div> 
+              <button onClick={()=>{
+                pageSet('list');
+              }}>목록</button>   
             </div> 
           : pagestatue === 'modify' ? 
               <div className='writepage'>
